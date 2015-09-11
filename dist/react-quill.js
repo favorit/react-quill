@@ -258,14 +258,14 @@ return /******/ (function(modules) { // webpackBootstrap
 				// because it's shared between components.
 				config.modules = JSON.parse(JSON.stringify(config.modules));
 				config.modules.toolbar = {
-					container: this.refs.toolbar.getDOMNode()
+					container: React.findDOMNode(this.refs.toolbar)
 				};
 			}
 			return config;
 		},
 	
 		getEditorElement: function() {
-			return this.refs.editor.getDOMNode();
+			return this.refs.editor;
 		},
 	
 		getEditorContents: function() {

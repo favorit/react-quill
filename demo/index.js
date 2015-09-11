@@ -125,5 +125,5 @@ if (React.createFactory) {
 // FIXME: Remove with React 0.13
 (React.render||React.renderComponent)(
 	Editor(),
-	document.body
+	document.getElementById('main')
 );

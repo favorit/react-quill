@@ -48,6 +48,7 @@
     "mocha": "^2.0.1",
     "mocha-text-cov": "^0.1.0",
     "react": "0.14.0",
+    "react-dom": "0.14.0",
     "should": "^4.3.0",
     "sinon": "^1.12.1",
     "travis-cov": "^0.2.5",

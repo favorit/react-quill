@@ -10,10 +10,11 @@ See the [live demo].
 [live demo]: https://zenoamaro.github.io/react-quill/
 
   1. [Quick start](#quick-start)
-  2. [API reference](#api-reference)
-  3. [Building and testing](#building-and-testing)
-  4. [Changelog](#changelog)
-  5. [License](#license)
+  2. [Bundling with Webpack](#bundling-with-webpack)
+  3. [API reference](#api-reference)
+  4. [Building and testing](#building-and-testing)
+  5. [Changelog](#changelog)
+  6. [License](#license)
 
 
 Quick start
@@ -116,9 +117,34 @@ Quick start
     See [component.js](src/component.js) for a fully fleshed-out example.
 
 
+Bundling with Webpack
+---------------------
+Quill ships only a pre-built javascript file, so Webpack will complain:
+
+~~~
+Error: ./~/react-quill/~/quill/dist/quill.js
+Critical dependencies:
+6:478-485 This seems to be a pre-built javascript file. Though this is possible, it's not recommended. Try to require the original source to get better results.
+@ ./~/react-quill/~/quill/dist/quill.js 6:478-485
+~~~
+
+The warning is harmless, but if you want to silence it you can avoid parsing Quill by adding this to your Webpack configuration:
+
+~~~js
+module: {
+  // Shut off warnings about using pre-built javascript files
+  // as Quill.js unfortunately ships one as its `main`.
+  noParse: /node_modules\/quill\/dist/
+}
+~~~
+
+See [#7](https://github.com/zenoamaro/react-quill/issues/7) for more details.
+
+
 API reference
 -------------
-`ReactQuill` accepts a few props:
+
+### Props
 
 `id`
 : ID to be applied to the DOM element.
@@ -155,8 +181,11 @@ API reference
 ];
 ```
 
+`style`
+: An object with custom CSS rules to apply on the editor's container. Rules should be in React's "camelCased" naming style.
+
 `styles`
-: An object with custom CSS styles to be added to the editor. See [configuration](http://quilljs.com/docs/configuration/) for details.
+: An object with custom CSS selectors and rules to add to the editor. Neither should be in "camelCased" style. Pass `false` to prevent Quill from injecting any style at all (except for text formats). See [configuration](http://quilljs.com/docs/configuration/) for details.
 
 `theme`
 : The name of the theme to apply to the editor. Defaults to `base`.
@@ -171,7 +200,7 @@ API reference
 : Called back with the new selected range, or null when unfocused.
 
 `onKeyPress(event)`
-: Called after a key has been pressed and released. 
+: Called after a key has been pressed and released.
 : Note that, like its native counterpart, this won't be called for special keys such as <kbd>shift</kbd> or <kbd>enter</kbd>. If you need those, hook onto `onKeyDown` or `onKeyUp`.
 
 `onKeyDown(event)`
@@ -180,6 +209,17 @@ API reference
 
 `onKeyUp(event)`
 : Called after a key has been released.
+
+
+### Methods
+
+If you have [a ref to a ReactQuill node](https://facebook.github.io/react/docs/more-about-refs.html), you will be able to invoke the following methods:
+
+`focus()`
+: Focuses the editor.
+
+`blur()`
+: Removes focus from the editor.
 
 
 Building and testing

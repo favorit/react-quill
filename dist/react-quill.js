@@ -112,7 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			modules: T.object,
 			toolbar: T.array,
 			formats: T.array,
-			styles: T.object,
+			styles: T.oneOfType([ T.object, T.oneOf([false]) ]),
 			theme: T.string,
 			pollInterval: T.number,
 			onKeyPress: T.func,
@@ -164,22 +164,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		componentWillReceiveProps: function(nextProps) {
 			var editor = this.state.editor;
-			// Update only if we've been passed a new `value`.
-			// This leaves components using `defaultValue` alone.
-			if ('value' in nextProps) {
-				// NOTE: Seeing that Quill is missing a way to prevent
-				//       edits, we have to settle for a hybrid between
-				//       controlled and uncontrolled mode. We can't prevent
-				//       the change, but we'll still override content
-				//       whenever `value` differs from current state.
-				if (nextProps.value !== this.getEditorContents()) {
-					this.setEditorContents(editor, nextProps.value);
+			// If the component is unmounted and mounted too quickly
+			// an error is thrown in setEditorContents since editor is
+			// still undefined. Must check if editor is undefined
+			// before performing this call.
+			if (editor) {
+				// Update only if we've been passed a new `value`.
+				// This leaves components using `defaultValue` alone.
+				if ('value' in nextProps) {
+					// NOTE: Seeing that Quill is missing a way to prevent
+					//       edits, we have to settle for a hybrid between
+					//       controlled and uncontrolled mode. We can't prevent
+					//       the change, but we'll still override content
+					//       whenever `value` differs from current state.
+					if (nextProps.value !== this.getEditorContents()) {
+						this.setEditorContents(editor, nextProps.value);
+					}
 				}
-			}
-			// We can update readOnly state in-place.
-			if ('readOnly' in nextProps) {
-				if (nextProps.readOnly !== this.props.readOnly) {
-					this.setEditorReadOnly(editor, nextProps.readOnly);
+				// We can update readOnly state in-place.
+				if ('readOnly' in nextProps) {
+					if (nextProps.readOnly !== this.props.readOnly) {
+						this.setEditorReadOnly(editor, nextProps.readOnly);
+					}
 				}
 			}
 		},
@@ -193,9 +199,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			// NOTE: Custom formats will be stripped when creating
 			//       the editor, since they are not present there yet.
-			//       Therefore, we re-set the contents from the props
-			this.setState({ editor:editor }, function () {
-				this.setEditorContents(editor, this.props.value);
+			//       Therefore, we re-set the contents from state.
+			this.setState({ editor:editor }, function() {
+				this.setEditorContents(editor, this.state.value);
 			}.bind(this));
 		},
 	
@@ -337,6 +343,14 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.props.onChangeSelection(range, source);
 				}
 			}
+		},
+	
+		focus: function() {
+			this.state.editor.focus();
+		},
+	
+		blur: function() {
+			this.setEditorSelection(this.state.editor, null);
 		},
 	
 		/*
@@ -484,7 +498,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			return React.DOM.span({
 				key: item.label || item.value || key,
 				className: 'ql-format-button ql-'+item.type,
-				title: item.label }
+				title: item.label },
+				item.children
 			);
 		},
 	
@@ -577,7 +592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		*/
 		setEditorContents: function(editor, value) {
 			var sel = editor.getSelection();
-			editor.setHTML(value);
+			editor.setHTML(value || '');
 			if (sel) this.setEditorSelection(editor, sel);
 		},
 	
@@ -594,6 +609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	module.exports = QuillMixin;
+
 
 /***/ },
 /* 5 */

@@ -130,7 +130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			'className',
 			'modules',
 			'toolbar',
-			'formats',
+			//'formats',
 			'styles',
 			'theme',
 			'pollInterval'
